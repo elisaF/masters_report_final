@@ -1,0 +1,108 @@
+\chapter{Cross-Domain Discourse Segmentation}\label{ch:rstseg}
+
+This chapter describes a short study on differences in automated RST discourse segmentation across two different domains (news and medical) and using two different RST segmenters. The work
+in this chapter was done in collaboration with Titan Page.
+
+Code and data for all experiments in this chapter are available here: \url{https://github.com/elisaF/cross_domain_segmentation}.
+
+\section{Chapter Overview}
+
+Dividing a text into units is the first step in analyzing a discourse. This first critical step is often overlooked by researchers, despite several studies showing this to be a significant source of error that propagates to the downstream tasks of span, nuclearity and relation labeling \cite{Feng:2015}. Furthermore, segmenting in a non-news domain, such as medical, has not been well studied and could present additional challenges.
+
+In this study, we compare segmentation errors in the news versus medical domain and aim to understand the differences. Because segmentation has not been studied in the medical domain, we annotate a novel small-scale corpus. We use two different RST parsers to further understand whether the quality of the parser itself affects the error differences. Not surprisingly, the news domain outperforms the medical domain when using both segmenters. When using the higher-quality RST segmenter, we find it outperforms the poorer segmenter by a considerable margin in the news domain, but by a much smaller amount in the medical domain. Thus, we conclude that improving an RST segmenter in the news domain provides little benefit to medical. A qualitative analysis finds that the higher error rate in the medical domain is often due to idiosyncrasies found in both the news domain that the segmenter has learned, and in the medical domain that the segmenter has never seen before.
+
+Our contributions in this work are two-fold: a small-scale corpus of medical documents annotated with RST-style discourse; a quantitative and qualitative analysis of the discourse segmentation errors in the medical domain that lay the groundwork for understanding both the limits of existing RST segmenters and problematic areas stemming from the way the RST theory was first operationalized.
+
+\section{Motivation}
+On the one hand, the segmentation task appears to be well-defined, as suggested by a high inter-annotator agreement (kappa=0.92), although this number is based on only 9 documents\footnote{Although 53 documents were doubly-annotated in the RST-DT corpus, all except 9 were \emph{pre-segmented} before being given to the annotators.} \cite{Carlson:2001}.
+The best discourse segmentation results are quite high at 92.6 F1 \cite{Feng:2015}. Perhaps because of these strong results, segmentation is often dismissed as a solved task. Many RST parsers evaluate only on gold EDUs and do not include a segmenter. Nevertheless, previous studies \cite{Soricut:2003,Fisher:2007,Joty:2015,Feng:2015} identify this first step as a primary bottleneck for accurate discourse parsing. Critically, even using the best-performing segmenter degrades results by 10\% on the downstream tasks of span, nuclearity and relation labeling when using predicted instead of gold EDUs \cite{Feng:2015}.
+
+\section{Related Work}
+The challenge of evaluating a model on a domain different from where it was trained is a well-studied area of research. 
+%In the area of discourse, although not using RST, \newcite{Prasad:2011} show that training on the Penn Discourse TreeBank (in the news genre) does not generalize well to a biomedical corpus for both classifying discourse connectives and discourse relations.% 
+In RST, much work already recognizes differences when moving away from the news domain. \newcite{Rimrott:2007} finds that certain relation types never occur in a small-scale analysis of scientific texts. \newcite{Bachand:2014} notes systematic differences in the distribution of discourse relations between news and online reviews. 
+
+Despite these differences, most research using RST makes no attempt to modify the news-trained parsers (or segmenters), even though they are evaluating on considerably different domains. 
+For example, the text classification model in \newcite{Ji:2017} evaluates on online reviews using a news-trained RST discourse parser. We performed a small-scale study on Yelp reviews using their news-trained segmenter, and found the segmenter performance very poor. The EDU boundaries often occurred in the middle of a clause, and the EDUs themselves were often nonsensical: 2.2\% of the EDUs were a punctuation mark, 6.4\% were 1-word EDUs (such as \lit{I}, \lit{like}, \lit{really}), and 7.9\% were 2-word EDUs (such as \lit{pleasantly surprised}, \lit{completely unethical}). In fact, when corresponding with the paper authors, it was found that they did not use their own segmenter because of these issues.
+
+Some studies do make an attempt to accommodate the different domain. For example, \newcite{Dacunha:2007} used RST to summarize medical articles, but only used a subset of the relation types that were observed to occur in that domain. However, in both cases, differences in discourse \emph{segmentation} are largely ignored.
+
+The only study we are aware of that specifically focuses on discourse segmentation in different domains is that of \newcite{Braud:2017}. The overall aim, though, is slightly different in that their goal is to design a segmenter for under-resourced languages by relying only on part-of-speech tags. The proposed neural network model that utilizes a multi-task learning setting to train on different RST corpora is able to outperform simple baselines. However, the study makes the simplifying assumption that each RST corpus represents a single domain, which is not always accurate (the GUM corpus\cite{Zeldes:2017} spans 4 different genres-- interviews, news, travel guides, how-tos).   
+
+\section{Experiment}
+We automatically segment the 11 Wall Street Journal articles and 11 sections of medical reports using the \textsc{DPLP} segmenter \cite{Ji:2014} and the segmenter proposed in \newcite{Feng:2014}, which we refer to as \textsc{Feng}.\footnote{We choose these two segmenters as they are the most widely-used and publicly available (most RST parsers do not include a segmenter).} We evaluate the segmenter's ability to detect EDU boundaries present in the gold data (RST-DT and the novel medical corpus) using the metrics of precision, recall and F1.
+
+\subsection{The Corpora}
+\begin{table}[t]
+\centering
+\begin{tabular}{ccccc}
+\toprule
+Corpus & \#documents  & \#tokens     & \#sentences     & \#EDUs    \\ \hline \hline
+\textsc{RST-DT small} &11  &4031  &166  &403  \\
+                                   \textsc{Medical} & 11 &3324  &166  &385\\             \bottomrule
+\end{tabular}
+\caption{Corpus statistics.}
+\label{tab:cross_domain_corpus}
+\end{table}
+The corpora statistics are summarized in Table \ref{tab:cross_domain_corpus}. The Medical corpus consists of 2 clinical trial reports from PubMed Central which were divided into their sections. Each section was manually annotated, resulting in 11 labeled documents. The News corpus was created by sampling the same number of Wall Street Journal articles from the ``Test'' portion of the RST-DT, that were similar in length to the medical documents. 
+
+\subsection{Experimental Setup}
+For the medical documents, XML formatting was stripped, and figures and tables were removed. The sections for \textit{Acknowledgements}, \textit{Competing Interests}, and \textit{Pre-publication History} were not included. For the news documents, no preprocessing was performed. 
+
+The RST parsers, both of which employ the Stanford Core NLP pipeline \cite{Manning:2014} for preprocessing, were updated to use the same version of this software (2017-06-09). For the Feng parser, we enabled the option to perform a second pass of EDU segmentation using global features.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{cllll}
+\toprule
+\multicolumn{1}{l}{\textsc{RST Segmenter}} & \textsc{Domain}  & \textsc{F1}     & \textsc{P}     & \textsc{R}    \\ \hline \hline
+\multirow{2}{*}{\textsc{DPLP}}              & \textit{News}    & 82.56 & 81.75 & 83.37 \\
+                                   & \textit{Medical} & 75.20 & 77.26 & 73.25 \\ \hline
+\multirow{2}{*}{\textsc{Feng}}              & \textit{News}    & \textbf{95.72} & \textbf{97.19} & \textbf{94.29} \\
+                                   & \textit{Medical} & 78.95 &80.00 & 77.92 \\ \bottomrule
+\end{tabular}
+\caption{Performance of discourse segmentation using two different discourse segmenters and evaluated on two different domains.}
+\label{tab:cross_domain_f1}
+\end{table}
+
+\section{Results}
+Table \ref{tab:cross_domain_f1} lists our results. As expected, the \textit{News} domain outperforms the \textit{Medical} domain, regardless of which segmenter is used. In the case of the \textsc{DPLP} segmenter, the gap between the two domains is about 7.4 F1 points. Note that the performance of this segmenter on \textit{News} lags considerably behind the state of the art (-10 F1 points). When switching to the \textsc{Feng} segmenter, the performance on \textit{News} increases dramatically (+13 F1 points). However, the performance on \textit{Medical} increases by a mere 3.75 F1 points. Thus, large gains in \textit{News} translate into only a small gain in \textit{Medical}, underscoring the need to handle out-of-domain data.
+
+\subsection{Error Analysis}
+We perform an error analysis to understand the types of errors present in both domains, and contrast with those seen only in the \textit{Medical} domain. We analyze errors only in the better-performing \textsc{Feng} segmenter.
+
+Across both domains, the segmenter has trouble with infinitival clauses which are generally not treated as separate EDUs but the guidelines contain several nuanced exceptions. In the following example, the first infinitival clause is not separated because it is a complement of the verb, while the second is segmented as a modifier to the preceding noun phrase \lit{its attempt}: 
+\begin{quote}
+[U.S. Memories is seeking major investors \textit{\textbf{to} back its attempt}][\textit{\textbf{to} crack the \$10 billion market $\ldots$}]
+\end{quote}
+Interestingly, \newcite{Braud:2017} also found this to  be a large source of errors for their segmentations. 
+
+\begin{table}
+  \hfill
+  \begin{minipage}{\textwidth}
+  \centering
+  \begin{maybesmall}
+\begin{tabular}{lp{5.5cm}p{5.5cm}}
+\toprule
+\textsc{Error Type}    & \textsc{Predicted}     & \textsc{Gold} \\ \hline\hline
+\multicolumn{1}{l}{\lit{in} modifier} & {[}compare the safety of hydrochloride \emph{in} patients{]}{[}diagnosed with{]}            & {[}compare the safety of hydrochloride{]}{[}\emph{in} patients{]}{[}diagnosed with{]}        \\ \hline
+past verb                           & {[}Ten patients{]}{[}\emph{dropped} out of{]}                                               & {[}Ten patients \emph{dropped} out of{]}                                                    \\ \hline
+title                               & {[}\emph{Conclusion} The offer of a prize draw incentive{]}                                    & {[}\emph{Conclusion}{]}{[}The offer of a prize draw incentive{]}                               \\ \hline 
+dash                                & {[}(95 \% CI 0.96{]}{[}\emph{--} 1.13){]}                                                      & {[}(95 \% CI 0.96 \emph{--} 1.13){]}                                                           \\ \hline
+citation*                            & {[}Studies have shown either small increase in response{]}{[}\emph{\{6\}} or more rapid{]} & {[}Studies have shown either small increase in response \emph{\{6\}}{]}{[}or more rapid{]} \\ \bottomrule
+\end{tabular}
+ \end{maybesmall}
+  \end{minipage}
+\caption{Types of segmentation errors in the \textit{Medical} domain with examples of predicted and gold EDU boundaries marked in square brackets (*the square brackets for the citation were changed to curly brackets to avoid confusion with EDU boundaries).}
+\label{tab:cross_domain_errors}
+\end{table}
+
+In the \textit{Medical} domain, Table \ref{tab:cross_domain_errors} summarizes and gives example of the most frequent errors. The first group of errors can be attributed to differences in syntactical constructions. The segmenter has trouble identifying embedded EDUs, in particular modifiers starting with \lit{in} describing the circumstance or background. Although \lit{in} phrases occur often in \textit{News}, they usually refer to a location or time (e.g., \lit{offices \emph{in} New Orleans}). For many clauses with past tense verbs, an EDU boundary is surprisingly inserted between the subject and verb. The segmenter is likely confusing these cases for participial phrases that modify the noun, which would be treated as embedded EDUs (e.g., \lit{[the charge][\textit{related} to the action]}). Because this analysis partly relies on syntax, a source of this error could be traced back to the Stanford Core NLP parser, which is also trained on news articles. 
+
+The next group of errors relate more to differences in formatting and markup of the two domains. The section titles in the \textit{Medical} domain are invariably never detected by the segmenter. Although \textit{News} contains headers, they are always separated by a colon. Punctuation is a strong and easy signal for EDU boundaries. Although even punctuation can be ambiguous and conflicting across domains. While the em dash (\lit{--}) is typically used in the same context as parentheses or commas, we find cases in the \textit{Medical} domain where it is used as a hyphen or en dash (\lit{-}), for example to specify a numerical range. Finally, the last error is one that would be common in many scientific domains. Citations do not occur in \textit{News}, and the square brackets around citations used by PubMed Central articles are confusing to the segmenter.
+
+\section{Chapter Summary}
+As a first step in understanding discourse differences between domains, we analyze the performance of two discourse segmenters on \textit{News} and \textit{Medical}. For this purpose, we create a first, small-scale corpus of annotated medical documents. We find that both discourse segmenters perform better on \textit{News}, as expected. However, we also find that large improvements in the \textit{News} domain gained by using a better segmenter do not translate into substantial improvements in the \textit{Medical} domain. An error analysis reveals difficulty in both domains for cases requiring a fine-grained syntactic analysis, as dictated by the RST-DT annotation guidelines. This finding suggests a need for either a clearer distinction in the guidelines, or more training examples for a model to learn to distinguish them. In the \textit{Medical} domain, we find that differences in syntactic construction and formatting, including use of punctuation, account for most of the segmentation errors. We hypothesize syntactic errors can be partly traced back to syntactic parsers used in the preprocessing steps that are also trained on news.
+
+Addressing even one of these issues may yield a multiplied effect on segmentation improvements as this domain is by nature highly repetitive and formulaic. However, a future avenue of research would be to first understand what impact these segmentation errors have on downstream tasks. On the one hand, using RST trees generated by the lower-performing \textsc{DPLP} parser nevertheless provides small gains to text categorization tasks such as sentiment analysis \cite{Ji:2017}. On the other hand, understanding the verb form, which proved to be difficult in the \textit{Medical} domain, has been shown to be useful in distinguishing text on experimental results from text describing more abstract concepts (such as background and introductory information) \cite{deWaard:2012}.
+

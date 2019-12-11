@@ -1,0 +1,13 @@
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+In this report, we focused on the one hand on discourse as dictated by a specific linguistic theory (RST), and on the other hand on discourse purportedly learned by a model. 
+
+Our first study investigated segmentation of RST discourse units in the medical domain. We present a first, small-scale corpus of medical documents annotated with EDUs. Errors in the medical domain provide insights into the differences at lower linguistic levels for this domain, and suggest possible problem areas with the operationalization of RST.
+
+Our second study explored the model of \newcite{Liu:2018} that claims to learn discourse structures by using structured attention that parses into a dependency tree. A careful analysis reveals the structures are not discourse and instead shows the model mostly learns lexical cues. We propose a variant of the model that is able to induce deeper structures on the task of sentiment analysis.
+
+\section{Future Work}
+In future work, we would like to understand whether errors in discourse segmentation, which undoubtedly affect the discourse trees, have a detectable effect on a downstream task. 
+
+For our analysis of latent structures, we would like to understand whether deeper structures can be induced on the other tasks, as well. More broadly, we would like to explore other tasks such as essay scoring or argumentation mining that purportedly make more use of discourse.

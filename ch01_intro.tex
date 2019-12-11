@@ -1,0 +1,32 @@
+\chapter{Introduction}
+\label{ch:intro}
+
+Discourse analysis is a concept that encompasses all other levels of Linguistics including syntax and semantics. It lives at all different levels of a text, from word to clause, sentence, paragraph, document, and in between. Despite these challenges, robust theories on discourse have been formulated and implemented for application to NLP tasks. While discourse influences most NLP tasks, it is less clear to what degree. Automated discourse parsers have been developed in an attempt to answer these questions, as well as computation models that learn discourse representations with much fewer constraints. In this report, we examine how well these representations for discourse, be it RST or learned, perform across different domains and tasks.
+
+We first investigate RST segmentation, the first step in an RST-style discourse analysis, and how well it performs on out-of-domain documents. Errors on this data point at domain differences in the linguistic layers underpinning discourse, including syntax. Other errors highlight the ambiguity of discourse. 
+
+In our second study, we analyze a model that learns latent ``discourse'' structures, i.e. representations of documents using structured attention that only assumes these must be dependency trees. We find that these structures are not capturing discourse and instead focus on lexical cues. While our proposed variant is able to induce deeper structures, we still make no claims this is discourse. 
+
+\section{Report Outline}
+
+The remainder of this report is structured as follows:
+
+In Chapter~\ref{ch:background}, we discuss Rhetorical Structure Theory (RST) and structured prediction. 
+
+In Chapter~\ref{ch:rstseg}, we present our first study on discourse segmentation for medical data. Our research question is to understand the magnitude and nature of segmentations errors in the medical domain. We present a quantitative and qualitative analysis showing the gap to be substantial, rooted in domain differences in the underlying linguistic levels and in ambiguities that arose when operationalizing RST.
+
+In Chapter~\ref{ch:latent}, we present our second study analyzing the latent structures learned by a structured attention that parses dependency trees. Our research questions are to understand what the model is learning, whether it is discourse, and whether we can induce more discourse-like structures. We find the model is learning lexical cues, but not discourse. Further, our proposed model induces deeper structures but are still very unlike RST trees.
+
+I conclude my report in Chapter~\ref{ch:conclusion} and propose future avenues of research.
+
+\section{List of Report Contributions}
+
+\noindent In this report, I make the following contributions:
+
+\begin{itemize}
+\item We introduce a first, small-scale corpus of medical articles annotated with RST discourse segments.
+\item We present a quantitative and qualitative analysis of errors in the medical domain that provide insight into the shortcomings of discourse parsing.
+\item We perform a comprehensive analysis of the document-level latent structures in \newcite{Liu:2018}, presenting ample evidence to refute the claim these are discourse. We instead show the model is learning mostly at the lexical level.
+\item We propose a (variant) model that induces deeper structures on the task of sentiment analysis, highlighting how design decisions of the neural network affect the learned representations.
+\end{itemize}
+

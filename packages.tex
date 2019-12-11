@@ -1,0 +1,92 @@
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{booktabs}
+
+%\setlist{itemsep=0px,parsep=0px,topsep=0.5\baselineskip,itemindent=2mm}%,leftmargin=15px}
+%\usepackage{wrapfig}
+%\usepackage{adjustbox}
+%\usepackage{calc}
+%\usepackage{caption}
+%\usepackage{subcaption}
+%\usepackage[normalem]{ulem}
+%\usepackage{makecell}
+%\usepackage{scalefnt}
+%\usepackage{algorithm}
+%\usepackage{algorithmicx}
+%\usepackage[noend]{algpseudocode}
+%\usepackage[makeroom]{cancel}
+
+% SCR: my own imports
+\usepackage{alltt}
+\usepackage{subfig}
+\usepackage{url}
+\usepackage{textcomp}
+\usepackage{comment}
+\usepackage{pdflscape}
+\usepackage[font={small}]{caption}
+
+% my figures
+\usepackage{rst}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{arrows}
+\tikzset{>=latex}
+\tikzset{every picture/.style=thick}
+% dependency trees
+\usepackage{tikz-dependency}
+
+
+% And aliases I use a lot
+\usepackage{aliases}
+
+% hyperref must be loaded last
+% clickable links
+\usepackage{hyperref}
+\hypersetup{
+  hidelinks,
+  naturalnames=true
+}
+\hypersetup{linktocpage}
+
+%% Underline
+\usepackage[normalem]{ulem}
+\usepackage{contour}
+\renewcommand{\ULdepth}{1.8pt}
+\contourlength{0.8pt}
+
+%%%
+%%% Section styles
+%%%
+\renewcommand{\chapternumberstyle}[1]{\textmd{#1}\\}
+\titleformat{\section}
+{\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+{\normalfont\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titleformat{\subparagraph}
+{\normalfont\normalsize\bfseries}{\thesubparagraph}{1em}{}
+
+
+\renewcommand{\contentsname}{Table of Contents\hfill}
+\renewcommand\bibname{References}
+
+\renewcommand{\cite}[1]{\citep{#1}}
+\newcommand{\shortcite}[1]{\citeyear{#1}}
+\renewcommand{\citename}[1]{\citeauthor{#1}}
+\newcommand{\newcite}[1]{\citet{#1}}
+
+
+\newcommand{\mytitle}{Testing the usefulness of RST and more general representations for discourse analysis across domains and applications}     %% The title of your thesis; use mixed-case.
+\newcommand{\myname}{Elisa Ferracane}    %% Your official UT name.
+
+
